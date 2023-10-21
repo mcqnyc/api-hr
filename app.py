@@ -10,7 +10,8 @@ from flask_smorest import Api
 from flask_migrate import Migrate
 from dotenv import load_dotenv
 
-from db import db, stores
+from db import db
+
 
 from resources.employees import blp as EmployeesBlueprint
 
@@ -27,16 +28,16 @@ def create_app(db_url=None):
     app.config["OPENAPI_SWAGGER_UI_PATH"] = "/swagger-ui"
     app.config[
         "OPENAPI_SWAGGER_UI_URL"
-    ] = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.9.0/swagger-ui-bundle.js"
+    ] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist"
     app.config["SQLALCHEMY_DATABASE_URI"] = db_url or os.getenv(
         "DATABASE_URL", "sqlite:///data.db"
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+    db.init_app(app)
+    ma = Marshmallow(app)
     api = Api(app)
 
-    # db.init_app(app)
-    # ma = Marshmallow(app)
     api.register_blueprint(EmployeesBlueprint)
 
     @app.get("/store")
